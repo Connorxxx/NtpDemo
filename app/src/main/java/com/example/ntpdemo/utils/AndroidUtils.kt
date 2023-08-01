@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import com.example.ntpdemo.App
 import com.example.ntpdemo.BuildConfig
 
-fun Any.logCat(tab: String = "MQTT_TEST_LOG") {
+fun Any.logCat(tab: String = "NTP_DEMO_LOG") {
     if (!BuildConfig.DEBUG) return
     if (this is String) Log.d(tab, this) else Log.d(tab, this.toString())
 }
