@@ -25,6 +25,14 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        create("328") {
+            storeFile = file("D:\\backup\\Svn\\trunk\\sign\\328\\platform.keystore")
+            storePassword = "android"
+            keyAlias = "platform"
+            keyPassword = "android"
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = true

@@ -11,37 +11,35 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NtpTime @Inject constructor() {
+class NtpClient @Inject constructor() {
 
     private var socket = DatagramSocket()
 
-    suspend fun syncTimeWithNtpServer(ntpServerAddress: String) = withContext(Dispatchers.IO) {
+    suspend fun syncTimeWithNtpServer(ntpServerAddress: String, port: Int = 123) = withContext(Dispatchers.IO) {
         runCatching {
             val ntpData = ByteArray(48)
             ntpData[0] = 0x1B.toByte()
 
             if (socket.isClosed) socket = DatagramSocket()
 
-            socket.soTimeout = 5000
-
+            socket.soTimeout = 2000
 
             val address = InetAddress.getByName(ntpServerAddress)
-            val packet = DatagramPacket(ntpData, ntpData.size, address, 123)
+            val packet = DatagramPacket(ntpData, ntpData.size, address, port)
+            val sendTime = System.currentTimeMillis()
             socket.send(packet)
-
 
             val receivePacket = DatagramPacket(ntpData, ntpData.size)
             socket.receive(receivePacket)
-
+            val receiveTime = System.currentTimeMillis()
             val ntpTime = parseNtpResponse(ntpData)
-            receivePacket.address.hostAddress?.logCat()
-            ntpTime.logCat()
 
 
-            val deviceTime = System.currentTimeMillis()
-            val timeDifference = ntpTime - deviceTime
-            SystemClock.setCurrentTimeMillis(deviceTime + timeDifference).also { it.logCat() }
-            ntpTime
+            val timeDifference = ntpTime - (receiveTime + sendTime) / 2
+            val time = System.currentTimeMillis() + timeDifference
+
+          //  SystemClock.setCurrentTimeMillis(time).also { it.logCat() }
+            time
         }
     }
 

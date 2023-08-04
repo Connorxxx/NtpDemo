@@ -16,6 +16,9 @@ fun String.showToast() {
     Toast.makeText(App.app, this, Toast.LENGTH_SHORT).show()
 }
 
+fun String.host() = split(":").getOrElse(0) { "localhost" }
+fun String.port() = split(":").getOrElse(1) { "123" }.toInt()
+
 fun NavHostController.navigateSingleTopTo(route: String) =
     this.navigate(route) {
         popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) {
